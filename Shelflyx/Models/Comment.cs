@@ -1,12 +1,12 @@
 ﻿namespace Shelflyx.Models
 {
-    public class Purchase
+    public class Comment
     {
-        public int PurchaseId { get; set; }
+        public int CommentId { get; set; }
         public int UserId { get; set; }
         public int ChapterId { get; set; }
-        public decimal AmountPaid { get; set; }
-        public DateTime DatePurchased { get; set; } = DateTime.UtcNow;
+        public string Content { get; set; } = string.Empty;
+        public DateTime DatePosted { get; set; } = DateTime.UtcNow;
 
         // Navigation
         public User? User { get; set; }

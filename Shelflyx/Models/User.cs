@@ -1,18 +1,32 @@
-﻿using Microsoft.AspNetCore.Mvc.ViewEngines;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Shelflyx.Models
 {
     public class User
     {
-        public int Id { get; set; }
-        public required string UserId { get; set; }       // external auth ID (e.g. ASP.NET Identity)
-        public required string Username { get; set; }
-        public string? ProfilePictureUrl { get; set; }
+        public int UserId { get; set; }
+
+        [Required, MaxLength(50)]
+        public string Username { get; set; } = string.Empty;
+
+        [Required, EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        public string PasswordHash { get; set; } = string.Empty;
+
+        public string ProfilePic { get; set; } = "/uploads/profiles/default.png";
         public decimal Balance { get; set; } = 0;
 
+        public string Role { get; set; } = "User";
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
         // Navigation
-        public ICollection<Purchase> Purchases { get; set; } = [];
-        public ICollection<Review> Reviews { get; set; } = [];
-        public ICollection<ReadingProgress> ReadingProgresses { get; set; } = [];
+        public ICollection<Purchase> Purchases { get; set; } = new List<Purchase>();
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+        public ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
+        public ICollection<Rating> Ratings { get; set; } = new List<Rating>();
+        public ICollection<WalletTransaction> WalletTransactions { get; set; } = new List<WalletTransaction>();
     }
 }
