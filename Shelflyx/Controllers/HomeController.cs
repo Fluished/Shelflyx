@@ -21,7 +21,7 @@ namespace Shelflyx.Controllers
                 .Take(12)
                 .ToListAsync();
 
-            return Json(series);
+            return View(series);
         }
 
         public async Task<IActionResult> Search(Search model)
