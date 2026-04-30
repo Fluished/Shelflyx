@@ -1,0 +1,107 @@
+@model Shelflyx.Models.ViewModels.SeriesDetail
+@{
+    ViewData["Title"] = Model.Series.Title;
+}
+
+<div class="series-detail">
+    <!-- Hero Banner -->
+    <div class="series-hero" style="--cover: url('@Model.Series.CoverImage')">
+        <div class="series-hero-overlay"></div>
+        <div class="series-hero-content">
+            <img src="@Model.Series.CoverImage" alt="@Model.Series.Title" class="detail-cover"
+                 onerror="this.src='/images/default-cover.png'" />
+            <div class="series-meta-block">
+                <span class="genre-pill">@Model.Series.Genre</span>
+                <h1>@Model.Series.Title</h1>
+                <p class="author-line">by <strong>@Model.Series.Author</strong></p>
+
+                <div class="rating-row">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <span class="star @(i <= Math.Round(Model.AverageRating) ? "filled" : "")">★</span>
+                    }
+                    <span class="rating-text">@Model.AverageRating.ToString("F1") (@Model.TotalRatings ratings)</span>
+                </div>
+
+                <p class="series-description">@Model.Series.Description</p>
+
+                <div class="action-row">
+                    @if (Model.Chapters.Any())
+                    {
+                        <a asp-controller="Reader" asp-action="Read"
+                           asp-route-chapterId="@Model.Chapters.First().ChapterId"
+                           class="btn-primary btn-lg">▶ Start Reading</a>
+                    }
+
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <form asp-action="ToggleFavorite" asp-controller="Series" method="post" style="display:inline">
+                            <input type="hidden" name="seriesId" value="@Model.Series.SeriesId" />
+                            <button type="submit" class="btn-outline @(Model.IsFavorited ? "favorited" : "")">
+                                @(Model.IsFavorited ? "♥ Bookmarked" : "♡ Bookmark")
+                            </button>
+                        </form>
+                    }
+                </div>
+
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <form asp-action="Rate" asp-controller="Series" method="post" class="rate-form">
+                        <input type="hidden" name="seriesId" value="@Model.Series.SeriesId" />
+                        <span>Rate: </span>
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <label class="star-label">
+                                <input type="radio" name="stars" value="@i"
+                                       @(Model.UserRating == i ? "checked" : "")
+                                       onchange="this.form.submit()" />
+                                <span class="star-input">★</span>
+                            </label>
+                        }
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Chapters List -->
+    <div class="page-container">
+        <div class="chapters-section">
+            <h2>Chapters <span class="chapter-count">@Model.Chapters.Count</span></h2>
+
+            @if (Model.Chapters.Any())
+            {
+                <div class="chapters-list">
+                    @foreach (var ch in Model.Chapters)
+                    {
+                        var hasPurchased = User.Identity?.IsAuthenticated == true &&
+                            (ch.Price == 0); // For display only — actual check in Reader
+
+                        <div class="chapter-row">
+                            <a asp-controller="Reader" asp-action="Read"
+                               asp-route-chapterId="@ch.ChapterId" class="chapter-link">
+                                <span class="ch-number">Ch. @ch.ChapterNumber</span>
+                                <span class="ch-title">@ch.Title</span>
+                                <span class="ch-date">@ch.DatePublished.ToString("MMM d, yyyy")</span>
+                            </a>
+                            <div class="ch-price">
+                                @if (ch.Price == 0)
+                                {
+                                    <span class="price-free">FREE</span>
+                                }
+                                else
+                                {
+                                    <span class="price-coin">🪙 @ch.Price</span>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="empty-text">No chapters yet. Check back soon!</p>
+            }
+        </div>
+    </div>
+</div>
