@@ -1,0 +1,51 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="page-container">
+    <div class="admin-header">
+        <h1>⚙ Admin Dashboard</h1>
+        <p>Manage your platform from here.</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-value">@ViewBag.TotalUsers</div>
+            <div class="stat-label">Users</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📚</div>
+            <div class="stat-value">@ViewBag.TotalSeries</div>
+            <div class="stat-label">Series</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📖</div>
+            <div class="stat-value">@ViewBag.TotalChapters</div>
+            <div class="stat-label">Chapters</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-value">@ViewBag.TotalRevenue</div>
+            <div class="stat-label">Revenue (coins)</div>
+        </div>
+    </div>
+
+    <div class="admin-actions">
+        <a asp-action="SeriesList" class="admin-action-card">
+            <span class="aa-icon">📚</span>
+            <strong>Manage Series</strong>
+            <span>Create, edit, publish</span>
+        </a>
+        <a asp-action="Users" class="admin-action-card">
+            <span class="aa-icon">👥</span>
+            <strong>Manage Users</strong>
+            <span>View and moderate</span>
+        </a>
+        <a asp-controller="Home" asp-action="Index" class="admin-action-card">
+            <span class="aa-icon">🏠</span>
+            <strong>View Site</strong>
+            <span>See public front end</span>
+        </a>
+    </div>
+</div>
