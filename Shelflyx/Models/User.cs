@@ -4,6 +4,7 @@ namespace Shelflyx.Models
 {
     public class User
     {
+        public string Biography { get; set; }
         public int UserId { get; set; }
 
         [Required, MaxLength(50)]
