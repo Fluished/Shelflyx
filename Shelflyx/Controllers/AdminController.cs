@@ -3,9 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shelflyx.Data;
 using Shelflyx.Models;
-using Shelflyx.Models.ViewModels;
 
-namespace MangaVault.Controllers
+namespace Shelflyx.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
@@ -25,7 +24,9 @@ namespace MangaVault.Controllers
             ViewBag.TotalSeries = await _db.Series.CountAsync();
             ViewBag.TotalChapters = await _db.Chapters.CountAsync();
             ViewBag.TotalPurchases = await _db.Purchases.CountAsync();
-            ViewBag.TotalRevenue = await _db.Purchases.SumAsync(p => (decimal?)p.AmountPaid) ?? 0;
+            ViewBag.TotalRevenue = (decimal)(
+                await _db.Purchases.SumAsync(p => (double?)p.AmountPaid) ?? 0
+            );
             return View();
         }
 
