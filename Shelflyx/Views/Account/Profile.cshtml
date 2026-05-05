@@ -1,0 +1,143 @@
+@model Shelflyx.Models.User
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="page-container">
+    <div class="profile-grid">
+
+        <!-- Left: Profile Card -->
+        <div class="profile-sidebar">
+            <div class="profile-card">
+                <div class="avatar-wrap">
+                    <img src="@Model.ProfilePic" alt="@Model.Username" class="profile-avatar" id="avatarPreview"
+                         onerror="this.src='/uploads/profiles/default.png'" />
+                    <label class="avatar-edit" for="picUpload" title="Change photo">📷</label>
+                </div>
+
+                <form asp-action="UploadProfilePic" method="post" enctype="multipart/form-data" id="picForm">
+                    <input type="file" id="picUpload" name="profilePic" accept="image/*" style="display:none"
+                           onchange="document.getElementById('picForm').submit()" />
+                </form>
+
+                <h2 class="profile-name">@Model.Username</h2>
+                <p class="profile-email">@Model.Email</p>
+                <span class="role-badge @(Model.Role == "Admin" ? "role-admin" : "role-user")">@Model.Role</span>
+                <p class="member-since">Member since @Model.CreatedAt.ToString("MMMM yyyy")</p>
+            </div>
+
+            <!-- Wallet -->
+            <div class="wallet-card">
+                <div class="wallet-header">
+                    <span class="wallet-icon">💰</span>
+                    <h3>Wallet</h3>
+                </div>
+                <div class="wallet-balance">
+                    <span class="balance-amount">@Model.Balance.ToString("N0")</span>
+                    <span class="balance-label">coins</span>
+                </div>
+
+                <form asp-action="TopUpWallet" method="post" class="topup-form">
+                    <input type="number" name="amount" min="10" max="10000" step="10"
+                           placeholder="Enter amount..." class="form-input" required />
+                    <button type="submit" class="btn-primary btn-full">Add Coins</button>
+                </form>
+
+                <div class="preset-amounts">
+                    @foreach (var amt in new[] { 100, 500, 1000, 5000 })
+                    {
+                        <button class="preset-btn" onclick="setAmount(@amt)">+@amt</button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Content -->
+        <div class="profile-content">
+            <!-- Wallet History -->
+            <div class="profile-section">
+                <h3>Transaction History</h3>
+                <div class="transaction-list">
+                    @if (Model.WalletTransactions.Any())
+                    {
+                        @foreach (var t in Model.WalletTransactions.OrderByDescending(t => t.DateCreated).Take(10))
+                        {
+                            <div class="transaction-item @(t.Amount > 0 ? "credit" : "debit")">
+                                <div class="tx-icon">@(t.Type == "TopUp" ? "↑" : "↓")</div>
+                                <div class="tx-info">
+                                    <span class="tx-desc">@t.Description</span>
+                                    <span class="tx-date">@t.DateCreated.ToString("MMM d, yyyy")</span>
+                                </div>
+                                <div class="tx-amount @(t.Amount > 0 ? "positive" : "negative")">
+                                    @(t.Amount > 0 ? "+" : "")@t.Amount coins
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="empty-text">No transactions yet.</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Purchase History -->
+            <div class="profile-section">
+                <h3>Purchase History</h3>
+                <div class="purchase-list">
+                    @if (Model.Purchases.Any())
+                    {
+                        @foreach (var p in Model.Purchases.OrderByDescending(p => p.DatePurchased))
+                        {
+                            <div class="purchase-item">
+                                <div class="purchase-info">
+                                    <span class="purchase-title">@p.Chapter?.Series?.Title</span>
+                                    <span class="purchase-chapter">Chapter @p.Chapter?.ChapterNumber</span>
+                                </div>
+                                <div class="purchase-meta">
+                                    <span class="purchase-price">@p.AmountPaid coins</span>
+                                    <span class="purchase-date">@p.DatePurchased.ToString("MMM d, yyyy")</span>
+                                </div>
+                                <a asp-controller="Reader" asp-action="Read"
+                                   asp-route-chapterId="@p.ChapterId" class="btn-sm">Read</a>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="empty-text">No purchases yet. <a asp-controller="Home" asp-action="Index">Start reading!</a></p>
+                    }
+                </div>
+            </div>
+
+            <!-- Favorites -->
+            <div class="profile-section">
+                <h3>Bookmarked Series</h3>
+                <div class="favorites-grid">
+                    @if (Model.Favorites.Any())
+                    {
+                        @foreach (var f in Model.Favorites)
+                        {
+                            <a asp-controller="Series" asp-action="Details"
+                               asp-route-id="@f.SeriesId" class="fav-card">
+                                <img src="@f.Series?.CoverImage" alt="@f.Series?.Title"
+                                     onerror="this.src='/images/default-cover.png'" />
+                                <span>@f.Series?.Title</span>
+                            </a>
+                        }
+                    }
+                    else
+                    {
+                        <p class="empty-text">No bookmarks yet.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function setAmount(val) {
+    document.querySelector('.topup-form input[name="amount"]').value = val;
+}
+</script>
