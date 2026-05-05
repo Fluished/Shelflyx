@@ -1,0 +1,122 @@
+@model Shelflyx.Models.ViewModels.Reader
+@{
+    ViewData["Title"] = $"{Model.Chapter.Series?.Title} - Ch.{Model.Chapter.ChapterNumber}";
+    Layout = "_ReaderLayout";
+}
+
+<div class="reader-wrapper">
+    <!-- Top Bar -->
+    <div class="reader-topbar">
+        <a asp-controller="Series" asp-action="Details"
+           asp-route-id="@Model.Chapter.SeriesId" class="reader-back">← @Model.Chapter.Series?.Title</a>
+        <div class="reader-chapter-info">
+            Chapter @Model.Chapter.ChapterNumber — @Model.Chapter.Title
+        </div>
+        <div class="reader-nav-top">
+            @if (Model.PrevChapter != null)
+            {
+                <a asp-action="Read" asp-route-chapterId="@Model.PrevChapter.ChapterId" class="reader-nav-btn">← Prev</a>
+            }
+            @if (Model.NextChapter != null)
+            {
+                <a asp-action="Read" asp-route-chapterId="@Model.NextChapter.ChapterId" class="reader-nav-btn">Next →</a>
+            }
+        </div>
+    </div>
+
+    @if (!Model.HasAccess)
+    {
+        <!-- Locked State -->
+        <div class="locked-chapter">
+            <div class="lock-icon">🔒</div>
+            <h2>Chapter Locked</h2>
+            <p>This chapter costs <strong>🪙 @Model.Chapter.Price coins</strong> to unlock.</p>
+
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <form asp-action="Purchase" method="post">
+                    <input type="hidden" name="chapterId" value="@Model.Chapter.ChapterId" />
+                    <button type="submit" class="btn-primary btn-lg">Unlock for @Model.Chapter.Price coins</button>
+                </form>
+                <a asp-controller="Account" asp-action="Profile" class="btn-outline">Add Coins to Wallet</a>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Login" class="btn-primary">Login to Purchase</a>
+            }
+        </div>
+    }
+    else
+    {
+        <!-- Pages — Vertical Scroll (Webtoon style) -->
+        <div class="reader-pages" id="readerPages">
+            @foreach (var p in Model.Pages)
+            {
+                <div class="reader-page">
+                    <img src="@p.ImagePath" alt="Page @p.PageNumber" loading="lazy"
+                         onerror="this.style.display='none'" />
+                </div>
+            }
+
+            @if (!Model.Pages.Any())
+            {
+                <div class="reader-empty">
+                    <p>No pages uploaded yet for this chapter.</p>
+                </div>
+            }
+        </div>
+
+        <!-- Bottom Nav -->
+        <div class="reader-bottombar">
+            @if (Model.PrevChapter != null)
+            {
+                <a asp-action="Read" asp-route-chapterId="@Model.PrevChapter.ChapterId" class="btn-outline">
+                    ← Ch. @Model.PrevChapter.ChapterNumber
+                </a>
+            }
+            <span class="ch-position">Chapter @Model.Chapter.ChapterNumber</span>
+            @if (Model.NextChapter != null)
+            {
+                <a asp-action="Read" asp-route-chapterId="@Model.NextChapter.ChapterId" class="btn-primary">
+                    Ch. @Model.NextChapter.ChapterNumber →
+                </a>
+            }
+        </div>
+
+        <!-- Comments -->
+        <div class="comments-section">
+            <h3>Comments (@Model.Comments.Count)</h3>
+
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <form asp-action="PostComment" method="post" class="comment-form">
+                    <input type="hidden" name="chapterId" value="@Model.Chapter.ChapterId" />
+                    <div class="comment-input-row">
+                        <img src="@(User.FindFirst("ProfilePic")?.Value ?? "/uploads/profiles/default.png")"
+                             alt="You" class="comment-avatar" onerror="this.src='/uploads/profiles/default.png'" />
+                        <textarea name="content" placeholder="Leave a comment..." class="comment-textarea" rows="2"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Post Comment</button>
+                </form>
+            }
+
+            <div class="comments-list">
+                @foreach (var c in Model.Comments)
+                {
+                    <div class="comment-item">
+                        <img src="@(c.User?.ProfilePic ?? "/uploads/profiles/default.png")"
+                             alt="@c.User?.Username" class="comment-avatar"
+                             onerror="this.src='/uploads/profiles/default.png'" />
+                        <div class="comment-body">
+                            <div class="comment-header">
+                                <strong>@c.User?.Username</strong>
+                                <span class="comment-date">@c.DatePosted.ToString("MMM d, yyyy 'at' h:mm tt")</span>
+                            </div>
+                            <p>@c.Content</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
