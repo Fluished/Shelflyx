@@ -1,0 +1,44 @@
+@model Shelflyx.Models.Series
+@{
+    ViewData["Title"] = "Chapters - " + Model.Title;
+}
+<div class="page-container">
+    <div class="admin-page-header">
+        <div>
+            <h1>Chapters</h1>
+            <p class="subtitle">@Model.Title</p>
+        </div>
+        <div class="header-actions">
+            <a asp-action="SeriesList" class="btn-outline">← Back</a>
+            <a asp-action="CreateChapter" asp-route-seriesId="@Model.SeriesId" class="btn-primary">+ Add Chapter</a>
+        </div>
+    </div>
+
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr><th>#</th><th>Title</th><th>Price</th><th>Pages</th><th>Published</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var ch in Model.Chapters.OrderBy(c => c.ChapterNumber))
+                {
+                    <tr>
+                        <td>Ch. @ch.ChapterNumber</td>
+                        <td>@ch.Title</td>
+                        <td>@(ch.Price == 0 ? "FREE" : $"🪙 {ch.Price}")</td>
+                        <td>@ch.Pages.Count pages</td>
+                        <td>@ch.DatePublished.ToString("MMM d, yyyy")</td>
+                        <td class="action-btns">
+                            <a asp-controller="Reader" asp-action="Read" asp-route-chapterId="@ch.ChapterId" class="btn-sm">Preview</a>
+                            <form asp-action="DeleteChapter" method="post" style="display:inline"
+                                  onsubmit="return confirm('Delete chapter @ch.ChapterNumber?')">
+                                <input type="hidden" name="chapterId" value="@ch.ChapterId" />
+                                <button type="submit" class="btn-sm btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

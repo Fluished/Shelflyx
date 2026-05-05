@@ -1,0 +1,36 @@
+@model List<Shelflyx.Models.User>
+@{
+    ViewData["Title"] = "Manage Users";
+}
+<div class="page-container">
+    <h1>Manage Users</h1>
+
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr><th>Avatar</th><th>Username</th><th>Email</th><th>Role</th><th>Balance</th><th>Joined</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var u in Model)
+                {
+                    <tr>
+                        <td><img src="@u.ProfilePic" class="table-avatar" onerror="this.src='/uploads/profiles/default.png'" /></td>
+                        <td>@u.Username</td>
+                        <td>@u.Email</td>
+                        <td><span class="role-badge @(u.Role == "Admin" ? "role-admin" : "role-user")">@u.Role</span></td>
+                        <td>🪙 @u.Balance</td>
+                        <td>@u.CreatedAt.ToString("MMM d, yyyy")</td>
+                        <td>
+                            <form asp-action="ToggleAdmin" method="post" style="display:inline">
+                                <input type="hidden" name="userId" value="@u.UserId" />
+                                <button type="submit" class="btn-sm">
+                                    @(u.Role == "Admin" ? "Revoke Admin" : "Make Admin")
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

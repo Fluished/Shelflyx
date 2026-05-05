@@ -1,0 +1,48 @@
+@model Shelflyx.Models.Series
+@{
+    ViewData["Title"] = "Edit Series";
+}
+<div class="page-container">
+    <div class="form-page">
+        <h1>Edit Series</h1>
+
+        <form asp-action="EditSeries" method="post" enctype="multipart/form-data" class="admin-form">
+            <input asp-for="SeriesId" type="hidden" />
+            <div class="form-group">
+                <label>Title *</label>
+                <input asp-for="Title" class="form-input" required />
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Genre *</label>
+                    <select asp-for="Genre" class="form-input" required>
+                        @foreach (var g in new[] { "Action", "Romance", "Fantasy", "Horror", "Comedy", "Sci-Fi", "Slice of Life", "Thriller" })
+                        {
+                            <option value="@g">@g</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Author *</label>
+                    <input asp-for="Author" class="form-input" required />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea asp-for="Description" class="form-input" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label>New Cover Image</label>
+                <input type="file" name="coverImage" accept="image/*" class="form-input" />
+                <small>Leave blank to keep current cover.</small>
+            </div>
+            <div class="form-group form-check">
+                <label><input asp-for="IsActive" type="checkbox" /> Active (visible to users)</label>
+            </div>
+            <div class="form-actions">
+                <a asp-action="SeriesList" class="btn-outline">Cancel</a>
+                <button type="submit" class="btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>

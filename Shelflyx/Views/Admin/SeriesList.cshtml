@@ -1,0 +1,37 @@
+@model List<Shelflyx.Models.Series>
+@{
+    ViewData["Title"] = "Manage Series";
+}
+<div class="page-container">
+    <div class="admin-page-header">
+        <h1>Manage Series</h1>
+        <a asp-action="CreateSeries" class="btn-primary">+ New Series</a>
+    </div>
+
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Cover</th><th>Title</th><th>Genre</th><th>Author</th><th>Chapters</th><th>Status</th><th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    <tr>
+                        <td><img src="@s.CoverImage" class="table-cover" onerror="this.src='/images/default-cover.png'" /></td>
+                        <td>@s.Title</td>
+                        <td><span class="genre-pill">@s.Genre</span></td>
+                        <td>@s.Author</td>
+                        <td>@s.Chapters.Count</td>
+                        <td><span class="status-badge @(s.IsActive ? "active" : "inactive")">@(s.IsActive ? "Active" : "Hidden")</span></td>
+                        <td class="action-btns">
+                            <a asp-action="EditSeries" asp-route-id="@s.SeriesId" class="btn-sm">Edit</a>
+                            <a asp-action="ChapterList" asp-route-seriesId="@s.SeriesId" class="btn-sm">Chapters</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
