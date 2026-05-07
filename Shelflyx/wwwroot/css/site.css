@@ -80,7 +80,7 @@ img { max-width: 100%; display: block; }
 }
 .nav-search button:hover { opacity: 0.85; }
 
-.nav-links { display: inline-grid; align-items: center; gap: 16px; margin-left: auto; }
+.nav-links { display: flex; align-items: center; gap: 16px; margin-left: auto; }
 
 .nav-link {
     color: var(--text-muted); font-size: 14px; font-weight: 600;
