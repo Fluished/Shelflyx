@@ -18,7 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\Account\" />
     <Folder Include="Views\Series\" />
     <Folder Include="wwwroot\images\" />
     <Folder Include="wwwroot\uploads\" />

@@ -12,7 +12,7 @@
                 <div class="avatar-wrap">
                     <img src="@Model.ProfilePic" alt="@Model.Username" class="profile-avatar" id="avatarPreview"
                          onerror="this.src='/uploads/profiles/default.png'" />
-                    <label class="avatar-edit" for="picUpload" title="Change photo">📷</label>
+                    <label class="avatar-edit" for="picUpload" title="Change photo"><i class="bi bi-camera"></i></label>
                 </div>
 
                 <form asp-action="UploadProfilePic" method="post" enctype="multipart/form-data" id="picForm">
