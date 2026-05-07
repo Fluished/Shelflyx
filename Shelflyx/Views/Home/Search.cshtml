@@ -5,71 +5,33 @@
 
 <div class="page-container">
     <h1 class="page-title">Search Series</h1>
-
+    
     <div class="search-panel">
         <form asp-action="Search" method="get" class="search-form">
             <div class="search-row">
                 <input type="text" name="query" value="@Model.Query" placeholder="Title, author, keywords..." class="search-input" />
                 <button type="submit" class="btn-primary">Search</button>
             </div>
-            <div class="filter-row">
-                <select name="genre" class="filter-select">
-                    <option value="">All Genres</option>
-                    @foreach (var g in new[] { "Action", "Romance", "Fantasy", "Horror", "Comedy", "Sci-Fi", "Slice of Life", "Thriller" })
-                    {
-                        <option value="@g" selected="@(Model.Genre == g)">@g</option>
-                    }
-                </select>
-
-                <input type="text" name="author" value="@Model.Author" placeholder="Author name..." class="filter-input" />
-
-                <div class="filter-chips">
-                    @foreach (var f in new[] { "Free", "Paid", "Popular" })
-                    {
-                        <label class="chip-label">
-                            <input type="radio" name="filter" value="@f" @(Model.Filter == f ? "checked" : "") />
-                            <span class="chip">@f</span>
-                        </label>
-                    }
-                    <label class="chip-label">
-                        <input type="radio" name="filter" value="" @(string.IsNullOrEmpty(Model.Filter) ? "checked" : "") />
-                        <span class="chip">Any</span>
-                    </label>
-                </div>
-            </div>
         </form>
     </div>
-
-    @if (Model.Results.Any())
+    
+    @if (Model.Results != null && Model.Results.Any())
     {
-        <p class="results-count">Found <strong>@Model.Results.Count</strong> series</p>
-        <div class="series-grid">
-            @foreach (var s in Model.Results)
+        <div class="results-container">
+            <h2>Search Results (@Model.Results.Count())</h2>
+            @foreach (var item in Model.Results)
             {
-                var avgRating = s.Ratings.Any() ? s.Ratings.Average(r => r.Stars) : 0;
-                <a asp-controller="Series" asp-action="Details" asp-route-id="@s.SeriesId" class="series-card">
-                    <div class="series-cover">
-                        <img src="@s.CoverImage" alt="@s.Title" onerror="this.src='/images/default-cover.png'" />
-                        <div class="series-badge">@s.Genre</div>
-                    </div>
-                    <div class="series-info">
-                        <h3>@s.Title</h3>
-                        <p class="series-author">by @s.Author</p>
-                        <div class="series-meta">
-                            <span class="stars">@(avgRating > 0 ? $"★ {avgRating:F1}" : "No ratings")</span>
-                            <span class="chapters">@s.Chapters.Count ch.</span>
-                        </div>
-                    </div>
-                </a>
+                <div class="result-item">
+                    <h3>@item.Title</h3>
+                    <p>@item.Description</p>
+                </div>
             }
         </div>
     }
-    else if (Context.Request.QueryString.HasValue)
+    else if (!string.IsNullOrEmpty(Model.Query))
     {
-        <div class="empty-state">
-            <div class="empty-icon">🔍</div>
-            <h3>No Results Found</h3>
-            <p>Try adjusting your search terms or filters.</p>
+        <div class="no-results">
+            <p>No results found for "@Model.Query"</p>
         </div>
     }
 </div>

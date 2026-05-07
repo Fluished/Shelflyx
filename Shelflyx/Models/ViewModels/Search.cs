@@ -1,11 +1,17 @@
-﻿namespace Shelflyx.Models.ViewModels
+using System.Collections.Generic;
+
+namespace Shelflyx.Models.ViewModels
 {
     public class Search
     {
-        public string? Query { get; set; }
-        public string? Genre { get; set; }
-        public string? Author { get; set; }
-        public string? Filter { get; set; }
-        public List<Series> Results { get; set; } = new();
+        public string Query { get; set; }
+        public List<SearchResult> Results { get; set; }
+    }
+
+    public class SearchResult
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
     }
 }
